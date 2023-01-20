@@ -1,5 +1,5 @@
 * {
-    border: 0;
+    margin: 0;
     padding: 0;
 }
 
@@ -7,11 +7,46 @@ body {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: "Acme", sans-serif;
+}
+
+.body-container {
+    position: relative;
+    width: 1000px;
+    margin: auto;
+}
+
+.header {
+    text-align: center;
+    margin: 2rem auto 0 auto;
+}
+
+.header > h1 {
+    font-family: "Lily Script One";
+    font-size: 3rem;
+}
+
+.main-content {
+    display: flex;
+}
+
+.sidebar-content {
+    flex: 1;
+}
+
+.sketchpad-content {
+    flex: 1;
+    text-align: center;
 }
 
 .sketchpad {
     display: grid;
     width: 576px;
     height: 576px;
-    margin: auto;
+    margin: 2rem auto;
+}
+
+footer {
+    text-align: center;
+    margin: 2rem;
 }

@@ -1,10 +1,14 @@
 // assign DOM elements
+const header = document.querySelector('.header');
+const bodyContainer = document.querySelector('.body-container');
+const sidebarContent = document.querySelector('.sidebar-content');
 const sketchpad = document.querySelector('.sketchpad');
 const toggleStatus = document.querySelector('.toggle-status');
 
 // set variables
 let pen = false;
-let columns = 64;
+let penColor = 'black';
+let columns = 32;
 let sketchpadSize = 576;
 let currentColumn = 0;
 let currentRow = 0;
@@ -27,7 +31,7 @@ function createSurface(columns, backgroundColor) {
 
 // toggle pen and color current cell if toggled on and in range
 function togglePen(e) {
-    if (e.code === "Space") {
+    if (e.code === "Space" || e.type === "click") {
         if (pen === false) {
             pen = true;
             toggleStatus.innerHTML = '<p>The Pen is ON!</p>'
@@ -44,18 +48,30 @@ function togglePen(e) {
 // track the position of the cursor and update currentColumn and currentRow
 function trackPosition(e) {
     // compute current margins of sketchpad to establish offsets for mouse position
+    // on top, must account for all header elements
+    // on left, must account for all auto margins and flex containers
+    // remember, margins collapse vertically
     const sketchpadStyle = window.getComputedStyle(sketchpad);
+    const headerStyle = window.getComputedStyle(header);
+    const headerOffsetY = Number(headerStyle.height.slice(0, -2))
+        + Number(headerStyle.marginTop.slice(0, -2))
+        + Number(headerStyle.marginBottom.slice(0, -2));
+    const bodyContainerStyle = window.getComputedStyle(bodyContainer);
+    const bodyContainerOffsetX = Number(bodyContainerStyle.marginLeft.slice(0, -2));
+    const sidebarContentStyle = window.getComputedStyle(sidebarContent);
+    const sidebarContentOffsetX = Number(sidebarContentStyle.width.slice(0, -2));
+    // account for new elements that may be added
+    const totalOffsetX = bodyContainerOffsetX + sidebarContentOffsetX;
+    const totalOffsetY = headerOffsetY;
     const offsetX = Number(sketchpadStyle.marginLeft.slice(0, -2)); // chop off 'px'
     const offsetY = Number(sketchpadStyle.marginTop.slice(0, -2)); // chop off 'px'
 
     // compute cell location
     const pixelsPerColumn = sketchpadSize / columns;
-    const xPosition = e.clientX - offsetX;
-    const yPosition = e.clientY - offsetY;
-    console.log(xPosition, yPosition, sketchpadSize / columns);
+    const xPosition = e.clientX - offsetX - totalOffsetX;
+    const yPosition = e.clientY - offsetY - totalOffsetY;
     const column = columns - Math.floor((sketchpadSize - xPosition) / pixelsPerColumn) - 1;
     const row = columns - Math.floor((sketchpadSize - yPosition) / pixelsPerColumn) - 1;
-    console.log(column, row);
 
     currentColumn = column;
     currentRow = row;
@@ -64,7 +80,7 @@ function trackPosition(e) {
 // color cell
 function colorCell(column, row) {
     const gridBox = document.querySelector(`.col${column}row${row}`)
-    gridBox.style.backgroundColor = 'black'; 
+    gridBox.style.backgroundColor = penColor; 
 }
 
 // mouse movement main drawing function
@@ -80,6 +96,7 @@ function draw(e) {
 createSurface(columns, 'coral');
 
 // add event listeners
-sketchpad.addEventListener('mousemove', draw);
-document.addEventListener('mousemove', trackPosition);
+sketchpad.addEventListener('mousemove', draw); // only draw on the sketchpad
+document.addEventListener('mousemove', trackPosition); // always track the position
 document.addEventListener('keypress', togglePen);
+sketchpad.addEventListener('click', togglePen);
