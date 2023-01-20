@@ -15,10 +15,11 @@ const penColorForm = document.querySelector('#pen-color');
 let pen = false;
 let penColor = 'black';
 let sketchpadBackgroundColor = 'white';
-let columns = 32;
+let columns = 16;
 let sketchpadSize = 576;
 let currentColumn = 0;
 let currentRow = 0;
+let currentSprayColor = '';
 
 // create surface
 function createSurface(columns, sBackgroundColor) {
@@ -42,9 +43,43 @@ function clearSurface() {
     createSurface(columns, sketchpadBackgroundColor);
 }
 
+// generate random color
+function randomColor() {
+    const red = Math.floor(Math.random() * 256);
+    const green = Math.floor(Math.random() * 256);
+    const blue = Math.floor(Math.random() * 256);
+
+    return `rgb(${red}, ${green}, ${blue})`;
+}
+
+// generate greyscale color
+function greyScaleColor(currentColor) {
+    if (!currentColor) {
+        currentSprayColor = `rgb(240, 240, 240)`;
+        return `rgb(240, 240, 240)`;
+    } else if (currentColor === currentSprayColor) {
+        return currentColor;
+    }
+}
+
+// color cell
+function colorCell(column, row) {
+    const gridBox = document.querySelector(`.col${column}row${row}`);
+    if (penColor === 'eraser') {
+        gridBox.style.backgroundColor = 'inherit';
+    } else if (penColor === 'multi-color' && gridBox.style.backgroundColor === '') {
+        gridBox.style.backgroundColor = randomColor();
+    } else if (penColor === 'spray-paint') {
+        const currentColor = gridBox.style.backgroundColor;
+        gridBox.style.backgroundColor = greyScaleColor(currentColor);
+    } else {
+        gridBox.style.backgroundColor = penColor; 
+    }
+}
+
 // toggle pen and color current cell if toggled on and in range
 function togglePen(e) {
-    if (e.code === "Space" || e.type === "click") {
+    if (e.type === "click") {
         if (pen === false) {
             pen = true;
             toggleStatus.innerHTML = '<p>The Pen is ON!</p>'
@@ -90,16 +125,6 @@ function trackPosition(e) {
     currentRow = row;
 } 
 
-// color cell
-function colorCell(column, row) {
-    const gridBox = document.querySelector(`.col${column}row${row}`);
-    if (penColor === 'eraser') {
-        gridBox.style.backgroundColor = 'inherit';
-    } else {
-        gridBox.style.backgroundColor = penColor; 
-    }
-}
-
 // mouse movement main drawing function
 function draw(e) {
     // is the pen active?
@@ -117,7 +142,6 @@ createSurface(columns, sketchpadBackgroundColor);
 // add event listeners
 sketchpad.addEventListener('mousemove', draw); // only draw on the sketchpad
 document.addEventListener('mousemove', trackPosition); // always track the position
-document.addEventListener('keypress', togglePen);
 sketchpad.addEventListener('click', togglePen);
 
 // handle forms - getting the radio button data was a little tricky
