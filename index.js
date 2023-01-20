@@ -4,6 +4,7 @@ const bodyContainer = document.querySelector('.body-container');
 const sidebarContent = document.querySelector('.sidebar-content');
 const sketchpad = document.querySelector('.sketchpad');
 const toggleStatus = document.querySelector('.toggle-status');
+const clearSketchpadBtn = document.querySelector('.clear-sketchpad-btn');
 
 // assign DOM element forms
 const sketchpadSizeForm = document.querySelector('#sketchpad-size');
@@ -91,8 +92,12 @@ function trackPosition(e) {
 
 // color cell
 function colorCell(column, row) {
-    const gridBox = document.querySelector(`.col${column}row${row}`)
-    gridBox.style.backgroundColor = penColor; 
+    const gridBox = document.querySelector(`.col${column}row${row}`);
+    if (penColor === 'eraser') {
+        gridBox.style.backgroundColor = 'inherit';
+    } else {
+        gridBox.style.backgroundColor = penColor; 
+    }
 }
 
 // mouse movement main drawing function
@@ -129,16 +134,18 @@ sketchpadColorForm.addEventListener('submit', e => {
     const data = new FormData(sketchpadColorForm);
     [arrData] = [...data];
     sketchpadBackgroundColor = arrData[1];
-    clearSurface();
+    sketchpad.style.backgroundColor = sketchpadBackgroundColor;
+    // clearSurface();
 });
 
 penColorForm.addEventListener('submit', e => {
     e.preventDefault();
     const data = new FormData(penColorForm);
     [arrData] = [...data];
-    if (arrData[1] === 'eraser') {
-        penColor = sketchpadBackgroundColor;
-    } else {
-        penColor = arrData[1];
-    }
+    penColor = arrData[1];
+});
+
+// handle the clear sketchpad button
+clearSketchpadBtn.addEventListener('click', e => {
+    clearSurface();
 });

@@ -57,6 +57,14 @@ button, .submitBtn {
     margin: 2rem auto;
 }
 
+.toggle-status {
+    font-size: 1.5rem;
+}
+
+.clear-sketchpad {
+    margin: 1rem;
+}
+
 footer {
     text-align: center;
     margin: 2rem;
