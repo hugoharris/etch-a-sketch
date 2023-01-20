@@ -5,19 +5,25 @@ const sidebarContent = document.querySelector('.sidebar-content');
 const sketchpad = document.querySelector('.sketchpad');
 const toggleStatus = document.querySelector('.toggle-status');
 
+// assign DOM element forms
+const sketchpadSizeForm = document.querySelector('#sketchpad-size');
+const sketchpadColorForm = document.querySelector('#sketchpad-color');
+const penColorForm = document.querySelector('#pen-color');
+
 // set variables
 let pen = false;
 let penColor = 'black';
+let sketchpadBackgroundColor = 'white';
 let columns = 32;
 let sketchpadSize = 576;
 let currentColumn = 0;
 let currentRow = 0;
 
 // create surface
-function createSurface(columns, backgroundColor) {
+function createSurface(columns, sBackgroundColor) {
     sketchpad.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
     sketchpad.style.gridTemplateRows = `repeat(${columns}, 1fr)`;
-    sketchpad.style.backgroundColor = backgroundColor;
+    sketchpad.style.backgroundColor = sBackgroundColor;
 
     // create item divs and attach row and column class
     for (let i = 0; i < columns; i++) {
@@ -27,6 +33,12 @@ function createSurface(columns, backgroundColor) {
             sketchpad.appendChild(newDiv);
         }
     }
+}
+
+// clear surface
+function clearSurface() {
+    sketchpad.innerHTML = '';
+    createSurface(columns, sketchpadBackgroundColor);
 }
 
 // toggle pen and color current cell if toggled on and in range
@@ -87,16 +99,46 @@ function colorCell(column, row) {
 function draw(e) {
     // is the pen active?
     if (pen) {
-        // color cell
-        colorCell(currentColumn, currentRow);
+        // are you on the sketchpad?
+        if ((currentColumn >= 0 && currentColumn < columns) &&(currentRow >= 0 && currentRow < columns)) {
+            colorCell(currentColumn, currentRow);
+        }
     }
 }
 
-// create surface
-createSurface(columns, 'coral');
+// create initial surface
+createSurface(columns, sketchpadBackgroundColor);
 
 // add event listeners
 sketchpad.addEventListener('mousemove', draw); // only draw on the sketchpad
 document.addEventListener('mousemove', trackPosition); // always track the position
 document.addEventListener('keypress', togglePen);
 sketchpad.addEventListener('click', togglePen);
+
+// handle forms - getting the radio button data was a little tricky
+sketchpadSizeForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = new FormData(sketchpadSizeForm);
+    [arrData] = [...data];
+    columns = arrData[1];
+    clearSurface();
+});
+
+sketchpadColorForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = new FormData(sketchpadColorForm);
+    [arrData] = [...data];
+    sketchpadBackgroundColor = arrData[1];
+    clearSurface();
+});
+
+penColorForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = new FormData(penColorForm);
+    [arrData] = [...data];
+    if (arrData[1] === 'eraser') {
+        penColor = sketchpadBackgroundColor;
+    } else {
+        penColor = arrData[1];
+    }
+});

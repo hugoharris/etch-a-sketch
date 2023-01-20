@@ -19,11 +19,45 @@
         </header>
         <div class="main-content">
             <div class="sidebar-content">
-                <h2>Placeholder</h2>
+                <h2>Sketchpad Size</h2>
+                <form id="sketchpad-size">
+                    <input type="radio" id="size16" name="sketchpad-size" value="16">
+                    <label for="size16">16 Columns</label><br>
+                    <input type="radio" id="size32" name="sketchpad-size" value="32">
+                    <label for="size32">32 Columns</label><br>
+                    <input type="radio" id="size64" name="sketchpad-size" value="64">
+                    <label for="size64">64 Columns</label><br>
+                    <input class="submitBtn" type="submit" value="Submit">
+                </form>
+                <h2>Sketchpad Color</h2>
+                <form id="sketchpad-color">
+                    <input type="radio" id="white" name="sketchpad-color" value="white">
+                    <label for="white">white</label><br>
+                    <input type="radio" id="black" name="sketchpad-color" value="black">
+                    <label for="black">black</label><br>
+                    <input type="radio" id="coral" name="sketchpad-color" value="coral">
+                    <label for="coral">coral</label><br>
+                    <input type="radio" id="tan" name="sketchpad-color" value="tan">
+                    <label for="tan">tan</label><br>
+                    <input class="submitBtn" type="submit" value="Submit">
+                </form>
+                <h2>Pen Color</h2>
+                <form id="pen-color">
+                    <input type="radio" id="black" name="pen-color" value="black">
+                    <label for="black">black</label><br>
+                    <input type="radio" id="multi-color" name="pen-color" value="multi-color">
+                    <label for="multi-color">multi-color</label><br>
+                    <input type="radio" id="spray-paint" name="pen-color" value="spray-paint">
+                    <label for="spray-paint">spray-paint</label><br>
+                    <input type="radio" id="eraser" name="pen-color" value="eraser">
+                    <label for="eraser">eraser</label><br>
+                    <input class="submitBtn" type="submit" value="Submit">
+                </form>
             </div>
             <div class="sketchpad-content">
                 <div class="sketchpad"></div>
                 <div class="toggle-status"><p>The Pen is OFF!</p></div>
+                <div class="clear-sketchpad"><button class="clear-sketchpad-btn">Clear the Sketchpad</button></div>
             </div>
         </div>
         <footer>
