@@ -19,7 +19,15 @@ let columns = 16;
 let sketchpadSize = 576;
 let currentColumn = 0;
 let currentRow = 0;
+let sprayColumn = 0;
+let sprayRow = 0;
 let currentSprayColor = '';
+
+// set default selectors to color firebrick
+document.querySelector("label[for=size16]").style.color = 'firebrick';
+document.querySelector("label[for=white]").style.color = 'firebrick';
+document.querySelector("label[for=black]").style.color = 'firebrick';
+
 
 // create surface
 function createSurface(columns, sBackgroundColor) {
@@ -55,10 +63,19 @@ function randomColor() {
 // generate greyscale color
 function greyScaleColor(currentColor) {
     if (!currentColor) {
-        currentSprayColor = `rgb(240, 240, 240)`;
+        sprayColumn = currentColumn;
+        sprayRow = currentRow;
         return `rgb(240, 240, 240)`;
-    } else if (currentColor === currentSprayColor) {
-        return currentColor;
+    } else if ((sprayColumn !== currentColumn) || (sprayRow !== currentRow)) {
+        sprayColumn = currentColumn;
+        sprayRow = currentRow;
+        let grey = Number(currentColor.slice(4,7));
+        if (grey > 10) {
+            grey -= 10;
+            return `rgb(${grey}, ${grey}, ${grey})`;
+        } else {
+            return `rgb(0, 0, 0)`;
+        }
     }
 }
 
@@ -67,8 +84,12 @@ function colorCell(column, row) {
     const gridBox = document.querySelector(`.col${column}row${row}`);
     if (penColor === 'eraser') {
         gridBox.style.backgroundColor = 'inherit';
-    } else if (penColor === 'multi-color' && gridBox.style.backgroundColor === '') {
-        gridBox.style.backgroundColor = randomColor();
+    } else if (penColor === 'multi-color') {
+        if ((sprayColumn !== currentColumn) || (sprayRow !== currentRow)) {
+            sprayColumn = currentColumn;
+            sprayRow = currentRow;
+            gridBox.style.backgroundColor = randomColor();
+        }
     } else if (penColor === 'spray-paint') {
         const currentColor = gridBox.style.backgroundColor;
         gridBox.style.backgroundColor = greyScaleColor(currentColor);
@@ -82,7 +103,7 @@ function togglePen(e) {
     if (e.type === "click") {
         if (pen === false) {
             pen = true;
-            toggleStatus.innerHTML = '<p>The Pen is ON!</p>'
+            toggleStatus.innerHTML = '<p>The Pen is <span class="firebrick">ON!</span></p>'
             if ((currentColumn >= 0 && currentColumn < columns) &&(currentRow >= 0 && currentRow < columns)) {
                 colorCell(currentColumn, currentRow);
             }
@@ -108,9 +129,10 @@ function trackPosition(e) {
     const bodyContainerOffsetX = Number(bodyContainerStyle.marginLeft.slice(0, -2));
     const sidebarContentStyle = window.getComputedStyle(sidebarContent);
     const sidebarContentOffsetX = Number(sidebarContentStyle.width.slice(0, -2));
-    // account for new elements that may be added
-    const totalOffsetX = bodyContainerOffsetX + sidebarContentOffsetX;
-    const totalOffsetY = headerOffsetY;
+    // account for new elements that may be added, plus 64px for sidebar margin-left, and
+    // 32px for header padding
+    const totalOffsetX = bodyContainerOffsetX + sidebarContentOffsetX + 64;
+    const totalOffsetY = headerOffsetY + 32;
     const offsetX = Number(sketchpadStyle.marginLeft.slice(0, -2)); // chop off 'px'
     const offsetY = Number(sketchpadStyle.marginTop.slice(0, -2)); // chop off 'px'
 
@@ -150,6 +172,10 @@ sketchpadSizeForm.addEventListener('submit', e => {
     const data = new FormData(sketchpadSizeForm);
     [arrData] = [...data];
     columns = arrData[1];
+    document.querySelector("label[for=size16]").style.color = 'black';
+    document.querySelector("label[for=size32]").style.color = 'black';
+    document.querySelector("label[for=size64]").style.color = 'black';
+    document.querySelector(`label[for=size${columns}]`).style.color = 'firebrick';
     clearSurface();
 });
 
@@ -159,6 +185,11 @@ sketchpadColorForm.addEventListener('submit', e => {
     [arrData] = [...data];
     sketchpadBackgroundColor = arrData[1];
     sketchpad.style.backgroundColor = sketchpadBackgroundColor;
+    document.querySelector("label[for=white]").style.color = 'black';
+    document.querySelector("label[for=grey]").style.color = 'black';
+    document.querySelector("label[for=coral]").style.color = 'black';
+    document.querySelector("label[for=tan]").style.color = 'black';
+    document.querySelector(`label[for=${sketchpadBackgroundColor}]`).style.color = 'firebrick';
     // clearSurface();
 });
 
@@ -167,6 +198,11 @@ penColorForm.addEventListener('submit', e => {
     const data = new FormData(penColorForm);
     [arrData] = [...data];
     penColor = arrData[1];
+    document.querySelector("label[for=black]").style.color = 'black';
+    document.querySelector("label[for=multi-color]").style.color = 'black';
+    document.querySelector("label[for=spray-paint]").style.color = 'black';
+    document.querySelector("label[for=eraser]").style.color = 'black';
+    document.querySelector(`label[for=${penColor}]`).style.color = 'firebrick';
 });
 
 // handle the clear sketchpad button
